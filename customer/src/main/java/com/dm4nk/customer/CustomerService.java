@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public record CustomerService(
-
+        CustomerRepository customerRepository
 ) {
     public void registerCustomer(CustomerRegistrationRequest customerRegistrationRequest) {
         Customer customer = Customer.builder()
@@ -13,5 +13,7 @@ public record CustomerService(
                 .email(customerRegistrationRequest.email())
                 .build();
         //todo dmpr add validation
+
+        customerRepository.save(customer);
     }
 }

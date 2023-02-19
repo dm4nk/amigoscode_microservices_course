@@ -3,16 +3,19 @@ services:
     container_name: postgres
     image: postgres
     environment:
-      POSTGRES_USER: dm4nk
-      POSTGRES_PASSWORD: password
+      POSTGRES_USER: ${POSTGRES_USER:-dm4nk}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-anime_the_best}
       PGDATA: /data/postgres
     volumes:
-      - postgres:/data/postgres
+      - type: volume
+        source: postgres
+        target: /data/postgres
     ports:
-      - "5432:5432"
+      - "5431:5432"
     networks:
       - postgres
     restart: unless-stopped
+
   pgadmin:
     container_name: pgadmin
     image: dpage/pgadmin4
@@ -21,17 +24,17 @@ services:
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
       PGADMIN_CONFIG_SERVER_MODE: 'False'
     volumes:
-      - pgadmin:/var/lib/pgadmin
+      - type: volume
+        source: pgadmin
+        target: /var/lib/pgadmin
     ports:
-      - "5050:80"
+      - "${PGADMIN_PORT:-5050}:80"
     networks:
       - postgres
     restart: unless-stopped
 
 networks:
   postgres:
-    driver: bridge
-  spring:
     driver: bridge
 
 volumes:

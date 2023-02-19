@@ -4,4 +4,15 @@ server:
 spring:
   application:
     name: customer
-
+  datasource:
+    password: anime_the_best
+    url: jdbc:postgresql://localhost:5431/customer
+    username: dm4nk
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: true
