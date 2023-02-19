@@ -8,6 +8,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>customer</module>
+        <module>fraud</module>
     </modules>
     <!--  <name>microservices_course</name>-->
 
