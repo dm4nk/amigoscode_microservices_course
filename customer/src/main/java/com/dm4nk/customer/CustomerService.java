@@ -1,12 +1,13 @@
 package com.dm4nk.customer;
 
+import com.dm4nk.clients.fraud.FraudCheckResponse;
+import com.dm4nk.clients.fraud.FraudClient;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 @Service
 public record CustomerService(
         CustomerRepository customerRepository,
-        RestTemplate restTemplate
+        FraudClient fraudClient
 ) {
     public void registerCustomer(CustomerRegistrationRequest customerRegistrationRequest) {
         Customer customer = Customer.builder()
@@ -18,7 +19,8 @@ public record CustomerService(
         customerRepository.saveAndFlush(customer);
 
         //todo dmpr check if fraudster
-        FraudCheckResponse fraudCheckResponse = restTemplate.getForObject("http://localhost:8081/api/vi/fraud-check/{customerId}", FraudCheckResponse.class, customer.getId());
+
+        FraudCheckResponse fraudCheckResponse = fraudClient.isFraudster(customer.getId());
 
         if (fraudCheckResponse.isFraudster()) {
             throw new IllegalStateException("fraudster");

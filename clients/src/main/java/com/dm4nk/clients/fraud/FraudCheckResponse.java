@@ -1,4 +1,4 @@
-package com.dm4nk.customer;
+package com.dm4nk.clients.fraud;
 
 public record FraudCheckResponse(Boolean isFraudster) {
 }
