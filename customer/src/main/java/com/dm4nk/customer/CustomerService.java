@@ -2,12 +2,15 @@ package com.dm4nk.customer;
 
 import com.dm4nk.clients.fraud.FraudCheckResponse;
 import com.dm4nk.clients.fraud.FraudClient;
+import com.dm4nk.clients.notification.NotificationClient;
+import com.dm4nk.clients.notification.NotificationRequest;
 import org.springframework.stereotype.Service;
 
 @Service
 public record CustomerService(
         CustomerRepository customerRepository,
-        FraudClient fraudClient
+        FraudClient fraudClient,
+        NotificationClient notificationClient
 ) {
     public void registerCustomer(CustomerRegistrationRequest customerRegistrationRequest) {
         Customer customer = Customer.builder()
@@ -26,6 +29,12 @@ public record CustomerService(
             throw new IllegalStateException("fraudster");
         }
 
-        //todo dmpr send notification
+        notificationClient.sendNotification(
+                new NotificationRequest(
+                        customer.getId(),
+                        customer.getEmail(),
+                        String.format("Welcome, %s", customer.getFirstName())
+                )
+        );
     }
 }
