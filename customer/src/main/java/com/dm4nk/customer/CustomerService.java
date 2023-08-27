@@ -1,5 +1,6 @@
 package com.dm4nk.customer;
 
+import com.dm4nk.amqp.RabbitMQMessageProducer;
 import com.dm4nk.clients.fraud.FraudCheckResponse;
 import com.dm4nk.clients.fraud.FraudClient;
 import com.dm4nk.clients.notification.NotificationClient;
@@ -10,7 +11,8 @@ import org.springframework.stereotype.Service;
 public record CustomerService(
         CustomerRepository customerRepository,
         FraudClient fraudClient,
-        NotificationClient notificationClient
+        NotificationClient notificationClient,
+        RabbitMQMessageProducer rabbitMQMessageProducer
 ) {
     public void registerCustomer(CustomerRegistrationRequest customerRegistrationRequest) {
         Customer customer = Customer.builder()
@@ -18,10 +20,9 @@ public record CustomerService(
                 .lastName(customerRegistrationRequest.lastName())
                 .email(customerRegistrationRequest.email())
                 .build();
-        //todo dmpr add validation
-        customerRepository.saveAndFlush(customer);
 
-        //todo dmpr check if fraudster
+        //todo add validation
+        customerRepository.saveAndFlush(customer);
 
         FraudCheckResponse fraudCheckResponse = fraudClient.isFraudster(customer.getId());
 
@@ -29,12 +30,16 @@ public record CustomerService(
             throw new IllegalStateException("fraudster");
         }
 
-        notificationClient.sendNotification(
-                new NotificationRequest(
-                        customer.getId(),
-                        customer.getEmail(),
-                        String.format("Welcome, %s", customer.getFirstName())
-                )
+        NotificationRequest notificationRequest = new NotificationRequest(
+                customer.getId(),
+                customer.getEmail(),
+                String.format("Welcome, %s", customer.getFirstName())
+        );
+
+        rabbitMQMessageProducer.publish(
+                "internal.exchange",
+                "internal.notification.routing-key",
+                notificationRequest
         );
     }
 }

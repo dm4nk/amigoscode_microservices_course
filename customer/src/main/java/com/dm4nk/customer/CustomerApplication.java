@@ -5,7 +5,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 
-@SpringBootApplication
+@SpringBootApplication(
+        scanBasePackages = {"com.dm4nk.customer", "com.dm4nk.amqp",}
+)
 @EnableEurekaClient
 @EnableFeignClients(
         basePackages = "com.dm4nk.clients"
