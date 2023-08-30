@@ -51,6 +51,7 @@
             <groupId>com.dm4nk</groupId>
             <artifactId>amqp</artifactId>
             <version>1.0-SNAPSHOT</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.dm4nk</groupId>
