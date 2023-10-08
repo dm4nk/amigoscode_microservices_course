@@ -1,6 +1,6 @@
 package com.dm4nk.customer;
 
-import com.dm4nk.aop.Loggable;
+import com.dm4nk.aop.annotations.LogMethod;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,7 +16,7 @@ public class CustomerController {
 
     private final CustomerService customerService;
 
-    @Loggable
+    @LogMethod
     @PostMapping
     public void registerCustomer(@RequestBody CustomerRegistrationRequest customerRegistrationRequest) {
         log.info("new customer registration {}", customerRegistrationRequest);

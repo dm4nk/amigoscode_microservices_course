@@ -1,11 +1,13 @@
 package com.dm4nk.aop;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.dm4nk.aop.annotations.ExcludeLog;
+import com.dm4nk.aop.annotations.IncludeLog;
+import com.dm4nk.aop.annotations.LogMethod;
+import com.dm4nk.aop.annotations.Loggable;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import one.util.streamex.StreamEx;
-import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
@@ -14,69 +16,84 @@ import org.aspectj.lang.reflect.CodeSignature;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Component;
 
-import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static com.dm4nk.aop.Constants.*;
+import static com.dm4nk.aop.Constants.DELIMITER;
 
 @Slf4j
 @Aspect
 @Component
-@AllArgsConstructor
-public class LoggingAspect {
+@NoArgsConstructor
+class LoggingAspect {
 
-    private final ObjectMapper objectMapper;
+    private static final Utils utils = new Utils(new ObjectMapper());
 
-    @Pointcut(value = "@annotation(logAnnotation)", argNames = "logAnnotation")
-    void annotation(final Loggable logAnnotation) {
+    @Pointcut(value = "@annotation(methodAnnotation)", argNames = "methodAnnotation")
+    private void methodAnnotation(final LogMethod methodAnnotation) {
     }
 
-    @AfterReturning(value = "annotation(logAnnotation))", argNames = "joinPoint, logAnnotation, result", returning = "result")
-    private void logWithAnnotation(JoinPoint joinPoint, Loggable logAnnotation, Object result) {
-        genericLog(joinPoint, logAnnotation, result);
+    @AfterReturning(value = "methodAnnotation(methodAnnotation))", argNames = "joinPoint, methodAnnotation, result", returning = "result")
+    private void logMethod(JoinPoint joinPoint, LogMethod methodAnnotation, Object result) {
+        methodAnnotationLog(joinPoint, methodAnnotation.logResult(), methodAnnotation.level(), result);
     }
 
-    private void genericLog(JoinPoint joinPoint, Loggable methodAnnotation, Object result) {
-        boolean logResult = methodAnnotation.logResult();
+    @Pointcut("within(@com.dm4nk.aop.annotations.Loggable *)")
+    private void classAnnotation() {
+    }
 
+    @AfterReturning(value = "classAnnotation()", argNames = "joinPoint, result", returning = "result")
+    private void logClass(JoinPoint joinPoint, Object result) {
+        classAnnotationLog(joinPoint, result);
+    }
+
+    private void classAnnotationLog(JoinPoint joinPoint, Object result) {
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
-        CodeSignature codeSignature = (CodeSignature) joinPoint.getSignature();
-        List<Boolean> includeMethod = Arrays.stream(signature.getMethod().getParameterAnnotations())
-                .map(LoggingAspect::isParameterIncluded)
-                .toList();
+        Method method = signature.getMethod();
+        LogMethod logMethod = method.getAnnotation(LogMethod.class);
+        if (logMethod != null)
+            return;
 
-        // todo check .allMatch and return from function
+        Loggable classAnnotation = method.getDeclaringClass().getAnnotation(Loggable.class);
 
-        List<String> args = StreamEx
-                .zip(
-                        codeSignature.getParameterNames(),
-                        joinPoint.getArgs(),
-                        (name, value) -> String.format(ARG_FORMAT, name, value))
-                .toList();
+        if (classAnnotation.excludeMethods()) {
+            IncludeLog includeLog = method.getAnnotation(IncludeLog.class);
 
-        String argsString = StreamEx
-                .zip(args, includeMethod, ImmutablePair::of)
-                .filter(ImmutablePair::getRight)
-                .map(ImmutablePair::getLeft)
-                .collect(Collectors.joining(DELIMITER));
-
-        String methodName = codeSignature.getName();
-
-        if (logResult) {
-            try {
-                log.info(PATTERN_WITH_RESULT, methodName, argsString, objectMapper.writeValueAsString(result));
-            } catch (JsonProcessingException e) {
-                log.info(PATTERN_WITH_RESULT, methodName, argsString, Objects.toString(result, "- "));
+            if (includeLog != null) {
+                methodAnnotationLog(joinPoint, true, classAnnotation.level(), result);
             }
         } else {
-            log.info(PATTERN_WITHOUT_RESULT, methodName, argsString);
+            ExcludeLog excludeLog = method.getAnnotation(ExcludeLog.class);
+
+            if (excludeLog == null) {
+                methodAnnotationLog(joinPoint, true, classAnnotation.level(), result);
+            }
         }
     }
 
-    private static Boolean isParameterIncluded(Annotation[] annotations) {
-        return Arrays.stream(annotations).noneMatch(annotation -> annotation instanceof Exclude);
+    private void methodAnnotationLog(JoinPoint joinPoint, boolean logResult, Level level, Object result) {
+        MethodSignature signature = (MethodSignature) joinPoint.getSignature();
+        CodeSignature codeSignature = (CodeSignature) joinPoint.getSignature();
+        String methodName = joinPoint.getTarget().getClass().getName() + "#" + codeSignature.getName();
+
+        String args = StreamEx
+                .zip(
+                        codeSignature.getParameterNames(),
+                        joinPoint.getArgs(),
+                        utils::getParameterString
+                )
+                .zipWith(
+                        Arrays.stream(signature.getMethod().getParameterAnnotations()).map(utils::isParameterIncluded)
+                )
+                .filterValues(Boolean::booleanValue)
+                .keys()
+                .collect(Collectors.joining(DELIMITER));
+
+        if (logResult && signature.getReturnType() != void.class) {
+            utils.log(methodName, args, result, level);
+        } else {
+            utils.log(methodName, args, level);
+        }
     }
 }
