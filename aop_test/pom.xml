@@ -11,6 +11,13 @@
     <packaging>jar</packaging>
     <artifactId>aop_test</artifactId>
 
+    <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -18,9 +25,9 @@
         </dependency>
 
         <dependency>
-            <groupId>com.dm4nk</groupId>
-            <artifactId>aop</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <groupId>com.github.dm4nk</groupId>
+            <artifactId>aop-logger</artifactId>
+            <version>master-SNAPSHOT</version>
         </dependency>
     </dependencies>
 </project>

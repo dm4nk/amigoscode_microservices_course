@@ -14,7 +14,6 @@
         <module>notification</module>
         <module>apigw</module>
         <module>amqp</module>
-        <module>aop</module>
         <module>aop_test</module>
     </modules>
     <!--  <name>microservices_course</name>-->

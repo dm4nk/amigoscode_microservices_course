@@ -10,7 +10,7 @@ public class AopTestController {
     private final AopTestService aopTestService;
 
     @GetMapping("/api/v1/aop/test")
-    public TestObject test() {
-        return aopTestService.test("AOP", "none", 2);
+    public void test() {
+        aopTestService.test("AOP", "none", 2);
     }
 }

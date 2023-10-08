@@ -5,11 +5,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication(
         scanBasePackages = {
-                "com.dm4nk.aop",
+                "com.dm4nk.aop.logger",
                 "com.dm4nk.aoptest"
         }
 )
-
 public class AopTestApplication {
     public static void main(String[] args) {
         SpringApplication.run(AopTestApplication.class, args);
