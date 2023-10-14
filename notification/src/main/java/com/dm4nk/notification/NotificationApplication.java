@@ -7,7 +7,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 
 @SpringBootApplication(
-        scanBasePackages = {"com.dm4nk.notification", "com.dm4nk.amqp",}
+        scanBasePackages = {
+                "com.dm4nk.notification",
+                "com.dm4nk.amqp",
+                "com.dm4nk.aop.logger",
+        }
 )
 @EnableEurekaClient
 public class NotificationApplication {

@@ -1,19 +1,24 @@
 package com.dm4nk.customer;
 
 import com.dm4nk.amqp.RabbitMQMessageProducer;
+import com.dm4nk.aop.logger.Level;
+import com.dm4nk.aop.logger.annotations.Loggable;
 import com.dm4nk.clients.fraud.FraudCheckResponse;
 import com.dm4nk.clients.fraud.FraudClient;
 import com.dm4nk.clients.notification.NotificationClient;
 import com.dm4nk.clients.notification.NotificationRequest;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
-public record CustomerService(
-        CustomerRepository customerRepository,
-        FraudClient fraudClient,
-        NotificationClient notificationClient,
-        RabbitMQMessageProducer rabbitMQMessageProducer
-) {
+@Loggable(level = Level.INFO)
+@AllArgsConstructor
+public class CustomerService {
+    private final CustomerRepository customerRepository;
+    private final FraudClient fraudClient;
+    private final NotificationClient notificationClient;
+    private final RabbitMQMessageProducer rabbitMQMessageProducer;
+
     public void registerCustomer(CustomerRegistrationRequest customerRegistrationRequest) {
         Customer customer = Customer.builder()
                 .firstName(customerRegistrationRequest.firstName())
