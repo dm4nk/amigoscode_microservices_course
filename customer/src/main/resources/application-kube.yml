@@ -1,12 +1,12 @@
 server:
-  port: 8081
+  port: 8080
 
 spring:
   application:
-    name: fraud
+    name: customer
   datasource:
     password: anime_the_best
-    url: jdbc:postgresql://localhost:5431/fraud
+    url: jdbc:postgresql://postgres:5432/customer
     username: dm4nk
   jpa:
     hibernate:
@@ -17,12 +17,6 @@ spring:
         format_sql: true
     show-sql: true
   zipkin:
-    base-url: http://localhost:9411
-
-eureka:
-  client:
-    service-url:
-      defaultZone: http://localhost:8761/eureka
-    fetch-registry: true
-    register-with-eureka: true
-    enabled: false
+    base-url: http://zipkin:9411
+  rabbitmq:
+    addresses: rabbitmq:5672
