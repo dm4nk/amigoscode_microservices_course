@@ -71,9 +71,9 @@ services:
 #    depends_on:
 #      - zipkin
 #      - eureka-server
-  fraud:
-    image: dm4nk/fraud:latest
-    container_name: fraud
+  ban:
+    image: dm4nk/ban:latest
+    container_name: ban
     ports:
       - "8081:8081"
     environment:

@@ -1,16 +1,18 @@
 server:
   port: 8081
 
-spring:
-  application:
-    name: fraud
+app:
   datasource:
     password: anime_the_best
-    url: jdbc:postgresql://postgres:5432/fraud
+    jdbc-url: jdbc:postgresql://postgres:5431/ban
     username: dm4nk
-  jpa:
-    hibernate:
-      ddl-auto: create-drop
+
+spring:
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  application:
+    name: ban
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect

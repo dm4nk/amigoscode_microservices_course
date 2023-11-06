@@ -1,23 +1,26 @@
-package com.dm4nk.fraud;
+package com.dm4nk.ban.application;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @SpringBootApplication(
         scanBasePackages = {
-                "com.dm4nk.fraud",
+                "com.dm4nk.ban",
                 "com.dm4nk.aop.logger",
+                "com.dm4nk.ban.db.model.jooq.generated.tables",
         }
 )
-@EnableEurekaClient
 @PropertySources({
         @PropertySource("classpath:clients-${spring.profiles.active}.properties")
 })
-public class FraudApplication {
+@EnableConfigurationProperties
+@EnableTransactionManagement
+public class BanApplication {
     public static void main(String[] args) {
-        SpringApplication.run(FraudApplication.class, args);
+        SpringApplication.run(BanApplication.class, args);
     }
 }
