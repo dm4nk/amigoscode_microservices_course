@@ -1,6 +1,10 @@
 package com.dm4nk.ban.common;
 
 public interface Constants {
+    enum ExceptionReason {
+        EXTRA_FIELD_SPECIFIED
+    }
+
     interface DB {
         String BANS = "bans";
         String ID = "id";
@@ -14,10 +18,6 @@ public interface Constants {
         String V1 = "v1/";
         String BAN = "ban/";
         String BAN_CHECK = "ban-check/";
-    }
-
-    enum ExceptionReason {
-        EXTRA_FIELD_SPECIFIED
     }
 
     interface ExceptionMessages {
