@@ -32,10 +32,10 @@ public class BanService {
     }
 
     public UUID ban(BanRequest banRequest) {
-        UUID customerId = banRequest.customerId();
+        UUID customerId = banRequest.getCustomerId();
 
-        Integer duration = banRequest.duration();
-        OffsetDateTime validTo = banRequest.validTo();
+        Integer duration = banRequest.getDuration();
+        OffsetDateTime validTo = banRequest.getValidTo();
 
         if (duration == null && validTo != null) {
             return banUntil(customerId, validTo);

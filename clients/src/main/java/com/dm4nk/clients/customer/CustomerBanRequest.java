@@ -1,4 +1,4 @@
-package com.dm4nk.clients.ban;
+package com.dm4nk.clients.customer;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,8 +12,8 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class BanRequest {
-    private UUID customerId;
+public class CustomerBanRequest {
+    private UUID id;
     private Integer duration;
     private OffsetDateTime validTo;
 }

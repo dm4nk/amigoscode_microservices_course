@@ -157,10 +157,6 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>io.springfox</groupId>
-            <artifactId>springfox-boot-starter</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.github.dm4nk</groupId>
             <artifactId>aop-logger</artifactId>
             <version>1.1</version>

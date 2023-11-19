@@ -1,7 +1,9 @@
 package com.dm4nk.clients.notification;
 
+import java.util.UUID;
+
 public record NotificationRequest(
-        Integer toCustomerId,
+        UUID toCustomerId,
         String toCustomerEmail,
         String message
 ) {
