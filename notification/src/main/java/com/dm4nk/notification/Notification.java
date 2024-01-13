@@ -4,9 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Data
 @Builder
@@ -15,16 +19,10 @@ import java.time.LocalDateTime;
 @Entity
 public class Notification {
     @Id
-    @SequenceGenerator(
-            name = "notification_id_sequence",
-            sequenceName = "notification_id_sequence"
-    )
-    @GeneratedValue(
-            strategy = GenerationType.SEQUENCE,
-            generator = "notification_id_sequence"
-    )
-    private Integer id;
-    private Integer toCustomerId;
+    @GeneratedValue(generator = "uuid-hibernate-generator")
+    @GenericGenerator(name = "uuid-hibernate-generator", strategy = "org.hibernate.id.UUIDGenerator")
+    private UUID id;
+    private UUID toCustomerId;
     private String toCustomerEmail;
     private String sender;
     private String message;

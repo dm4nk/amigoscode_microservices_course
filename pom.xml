@@ -8,7 +8,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>customer</module>
-        <module>fraud</module>
+        <module>ban</module>
         <module>eureka-server</module>
         <module>clients</module>
         <module>notification</module>
@@ -21,9 +21,9 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <spring.boot.maven.plugin.version>2.5.7</spring.boot.maven.plugin.version>
-        <spring.boot.dependencies.version>2.5.7</spring.boot.dependencies.version>
-        <spring.cloud.version>2020.0.3</spring.cloud.version>
+        <spring.boot.maven.plugin.version>2.7.2</spring.boot.maven.plugin.version>
+        <spring.boot.dependencies.version>2.7.2</spring.boot.dependencies.version>
+        <spring.cloud.version>2021.0.3</spring.cloud.version>
         <image>dm4nk/${project.artifactId}:${project.version}</image>
     </properties>
 
@@ -59,12 +59,23 @@
             <artifactId>lombok</artifactId>
         </dependency>
         <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-boot-starter</artifactId>
+            <version>3.0.0</version>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13.2</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

@@ -13,10 +13,10 @@ spring:
           uri: lb://CUSTOMER
           predicates:
             - Path=/api/v1/customers/**
-        - id: fraud
-          uri: lb://FRAUD
+        - id: ban
+          uri: lb://BAN
           predicates:
-            - Path=/api/v1/fraud-check/**
+            - Path=/api/v1/ban-check/**
 
 eureka:
   client:
