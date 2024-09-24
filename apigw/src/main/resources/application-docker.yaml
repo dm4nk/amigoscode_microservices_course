@@ -4,23 +4,22 @@ server:
 spring:
   application:
     name: api-gateway
-  zipkin:
-    base-url: http://zipkin:9411
   cloud:
     gateway:
       routes:
         - id: customer
           uri: lb://CUSTOMER
           predicates:
-            - Path=/api/v1/customers/**
+            - Path=/api/v1/customer/**
         - id: ban
           uri: lb://BAN
           predicates:
             - Path=/api/v1/ban-check/**
 
-eureka:
-  client:
-    service-url:
-      defaultZone: http://eureka-server:8761/eureka
-    fetch-registry: true
-    register-with-eureka: true
+management:
+  zipkin:
+    tracing:
+      endpoint: http://zipkin:9411/api/v2/spans
+  tracing:
+    sampling:
+      probability: 1.0

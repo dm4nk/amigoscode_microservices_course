@@ -19,10 +19,11 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
     show-sql: true
-  graphql:
-    graphiql:
-      enabled: true
+
+management:
   zipkin:
-    base-url: http://zipkin:9411
-  rabbitmq:
-    addresses: rabbitmq:5672
+    tracing:
+      endpoint: http://zipkin:9411/api/v2/spans
+  tracing:
+    sampling:
+      probability: 1.0

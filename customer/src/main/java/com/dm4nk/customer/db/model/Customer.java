@@ -1,20 +1,16 @@
 package com.dm4nk.customer.db.model;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
-import java.time.OffsetDateTime;
-import java.util.Set;
-import java.util.UUID;
+import java.util.List;
 
 @Getter
 @Setter
@@ -22,16 +18,21 @@ import java.util.UUID;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-public class Customer {
-    @Id
-    @GeneratedValue(generator = "uuid-hibernate-generator")
-    @GenericGenerator(name = "uuid-hibernate-generator", strategy = "org.hibernate.id.UUIDGenerator")
-    private UUID id;
-    private String firstName;
-    private String lastName;
-    private String email;
-    private OffsetDateTime createdAt;
+public class Customer extends BaseEntity {
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    private Set<Note> notes;
+    @Column(name = "first_name", nullable = false)
+    private String firstName;
+
+    @Column(name = "last_name", nullable = false)
+    private String lastName;
+
+    @Column(name = "email", nullable = false)
+    private String email;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    private List<Book> books;
+
+    public void addBook(Book book) {
+        books.add(book);
+    }
 }

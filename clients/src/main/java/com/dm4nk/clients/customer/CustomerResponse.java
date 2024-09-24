@@ -3,7 +3,7 @@ package com.dm4nk.clients.customer;
 import lombok.Builder;
 import lombok.Data;
 
-import java.time.OffsetDateTime;
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -14,7 +14,7 @@ public class CustomerResponse {
     private String firstName;
     private String lastName;
     private String email;
-    private OffsetDateTime createdAt;
-    private Boolean isBanned;
-    private List<NotePreviewResponse> notes;
+    private Instant createdDate;
+    private Instant lastModifiedDate;
+    private List<BookResponse> books;
 }

@@ -1,56 +1,38 @@
 package com.dm4nk.customer.controller;
 
-import com.dm4nk.clients.customer.CustomerMutationRequest;
+import com.dm4nk.clients.customer.AddBookRequest;
+import com.dm4nk.clients.customer.CustomerCreationRequest;
 import com.dm4nk.clients.customer.CustomerResponse;
-import com.dm4nk.clients.note.NoteRequest;
-import com.dm4nk.clients.note.NoteResponse;
 import com.dm4nk.customer.service.CustomerService;
-import com.dm4nk.customer.service.NoteService;
 import lombok.AllArgsConstructor;
-import org.springframework.graphql.data.method.annotation.Argument;
-import org.springframework.graphql.data.method.annotation.MutationMapping;
-import org.springframework.graphql.data.method.annotation.QueryMapping;
-import org.springframework.stereotype.Controller;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.UUID;
 
-
-@Controller
+@RestController
 @AllArgsConstructor
-@SuppressWarnings("unused")
+@RequestMapping("/api/v1/customer")
 public class CustomerController {
     private final CustomerService customerService;
-    private final NoteService noteService;
 
-    @QueryMapping
-    public CustomerResponse getCustomerById(@Argument UUID id) {
-        return customerService.getCustomer(id);
+    @GetMapping
+    public ResponseEntity<List<CustomerResponse>> findCustomers() {
+        return customerService.findAll();
     }
 
-    @QueryMapping
-    public List<CustomerResponse> getCustomers() {
-        return customerService.getCustomers();
+    @PostMapping
+    public ResponseEntity<CustomerResponse> createCustomer(@RequestBody CustomerCreationRequest request) {
+        return customerService.create(request);
     }
 
-
-    @QueryMapping
-    public NoteResponse getNote(UUID id) {
-        return noteService.getNote(id);
-    }
-
-    @MutationMapping
-    public CustomerResponse mutateCustomer(@Argument CustomerMutationRequest customerInput) {
-        return customerService.mutateCustomer(customerInput);
-    }
-
-    @MutationMapping
-    public CustomerResponse registerCustomer(@Argument String firstName, @Argument String lastName, @Argument String email) {
-        return customerService.registerCustomer(firstName, lastName, email);
-    }
-
-    @MutationMapping
-    public NoteResponse mutateNote(NoteRequest noteInput) {
-        return noteService.updateNote(noteInput);
+    @PutMapping("/add")
+    public ResponseEntity<CustomerResponse> addBook(@RequestBody AddBookRequest request) {
+        return customerService.add(request);
     }
 }
