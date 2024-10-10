@@ -1,7 +1,10 @@
+version: "3.7"
 services:
   postgres:
     container_name: postgres
-    image: postgres:15.4-bullseye
+    image: debezium/postgres:15
+    ports:
+      - "5431:5432"
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-dm4nk}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-anime_the_best}
@@ -10,110 +13,81 @@ services:
       - type: volume
         source: postgres
         target: /data/postgres
-    ports:
-      - "5431:5432"
-    networks:
-      - postgres
-    restart: unless-stopped
 
   pgadmin:
     container_name: pgadmin
     image: dpage/pgadmin4
+    ports:
+      - "${PGADMIN_PORT:-5050}:80"
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
       PGADMIN_CONFIG_SERVER_MODE: 'False'
-    volumes:
-      - type: volume
-        source: pgadmin
-        target: /var/lib/pgadmin
-    ports:
-      - "${PGADMIN_PORT:-5050}:80"
-    networks:
-      - postgres
-    restart: unless-stopped
 
   zipkin:
     image: openzipkin/zipkin
     container_name: zipkin
     ports:
       - "9411:9411"
-    networks:
-      - spring
-  #  eureka-server:
-  #    image: dm4nk/eureka-server:latest
-  #    container_name: eureka-server
-  #    ports:
-  #      - "8761:8761"
-  #    environment:
-  #      - SPRING_PROFILES_ACTIVE=docker
-  #    networks:
-  #      - spring
-  #    depends_on:
-  #      - zipkin
-  #  apigw:
-  #    image: dm4nk/apigw:latest
-  #    container_name: apigw
-  #    ports:
-  #      - "8083:8083"
-  #    environment:
-  #      - SPRING_PROFILES_ACTIVE=docker
-  #    networks:
-  #      - spring
-  #    depends_on:
-  #      - zipkin
-  #      - eureka-server
-#  ban:
-#    image: dm4nk/ban:latest
-#    container_name: ban
-#    ports:
-#      - "8081:8081"
-#    environment:
-#      - SPRING_PROFILES_ACTIVE=docker
-#    networks:
-#      - spring
-#      - postgres
-#    depends_on:
-#      - zipkin
-#      #      - eureka-server
-#      - postgres
-#      - rabbitmq
-#  notification:
-#    image: dm4nk/notification:latest
-#    container_name: notification
-#    ports:
-#      - "8082:8082"
-#    environment:
-#      - SPRING_PROFILES_ACTIVE=docker
-#    networks:
-#      - spring
-#      - postgres
-#    depends_on:
-#      - zipkin
-#      #      - eureka-server
-#      - postgres
-#      - rabbitmq
-#  customer:
-#    image: dm4nk/customer:latest
-#    container_name: customer
-#    ports:
-#      - "8080:8080"
-#    environment:
-#      - SPRING_PROFILES_ACTIVE=docker
-#    networks:
-#      - spring
-#      - postgres
-#    depends_on:
-#      - zipkin
-#      #      - eureka-server
-#      - postgres
 
-networks:
-  postgres:
-    driver: bridge
-  spring:
-    driver: bridge
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    ports:
+      - 22181:2181
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+  kafka:
+    image: confluentinc/cp-enterprise-kafka:5.5.3
+    ports:
+      - 9092:9092
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    depends_on:
+      - zookeeper
+
+  schema-registry:
+    image: confluentinc/cp-schema-registry:5.5.3
+    ports:
+      - 8081:8081
+    environment:
+      - SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL=zookeeper:2181
+      - SCHEMA_REGISTRY_HOST_NAME=schema-registry
+      - SCHEMA_REGISTRY_LISTENERS=http://schema-registry:8081,http://localhost:8081
+    depends_on:
+      - zookeeper
+      - kafka
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui
+    container_name: kafka-ui
+    ports:
+      - "8090:8080"
+    environment:
+      - KAFKA_CLUSTERS_0_NAME=local
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9092
+      - KAFKA_CLUSTERS_0_ZOOKEEPER=zookeeper:2181
+      - KAFKA_CLUSTERS_0_SCHEMAREGISTRY=http://schema-registry:8081
+
+  debezium:
+    image: debezium/connect:1.4
+    container_name: debezium
+    ports:
+      - 8083:8083
+    environment:
+      BOOTSTRAP_SERVERS: kafka:9092
+      GROUP_ID: 1
+      CONFIG_STORAGE_TOPIC: connect_configs
+      OFFSET_STORAGE_TOPIC: connect_offsets
+      KEY_CONVERTER: io.confluent.connect.avro.AvroConverter
+      VALUE_CONVERTER: io.confluent.connect.avro.AvroConverter
+      CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL: http://schema-registry:8081
+      CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL: http://schema-registry:8081
+    depends_on:
+      - kafka
 
 volumes:
   postgres:
-  pgadmin:

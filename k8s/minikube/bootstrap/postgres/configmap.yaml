@@ -1,8 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: postgres-config
-data:
-  POSTGRES_DB: dm4nk
-  POSTGRES_USER: dm4nk
-  POSTGRES_PASSWORD: anime_the_best
