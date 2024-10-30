@@ -1,8 +1,8 @@
 package com.dm4nk.search.listener;
 
+import customer.public$.customer.Envelope;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.avro.generic.GenericRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
@@ -15,7 +15,7 @@ import java.util.List;
 public class KafkaConnectorConsumerListener {
 
     @KafkaListener(topics = "customer.public.customer", batch = "true")
-    public void consumeMessage(List<ConsumerRecord<String, GenericRecord>> message) {
+    public void consumeMessage(List<ConsumerRecord<String, Envelope>> message) {
         log.info("Consumed message: {}", message);
     }
 }
