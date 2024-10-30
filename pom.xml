@@ -11,6 +11,7 @@
         <module>clients</module>
         <module>apigw</module>
         <module>customer</module>
+        <module>search-service</module>
     </modules>
     <!--  <name>microservices_course</name>-->
 

@@ -1,0 +1,31 @@
+server:
+  port: 8097
+
+spring:
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  application:
+    name: search
+  kafka:
+    bootstrap-servers: localhost:29092
+    consumer:
+      group-id: ${spring.application.name}
+      keyDeserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      valueDeserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      properties:
+        spring.deserializer.key.delegate.class: org.apache.kafka.common.serialization.StringDeserializer
+        spring.deserializer.value.delegate.class: io.confluent.kafka.serializers.KafkaAvroDeserializer
+        schema.registry.url: http://localhost:8081
+
+management:
+  zipkin:
+    tracing:
+      endpoint: http://localhost:9411/api/v2/spans
+  tracing:
+    sampling:
+      probability: 1.0
+
+elasticsearch:
+  host-and-port: localhost:9200
+  customer-index-name: searchservice-customer
