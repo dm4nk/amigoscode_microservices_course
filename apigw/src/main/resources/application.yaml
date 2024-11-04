@@ -11,10 +11,10 @@ spring:
           uri: lb://CUSTOMER
           predicates:
             - Path=/api/v1/customer/**
-        - id: ban
-          uri: lb://BAN
+        - id: book
+          uri: lb://BOOK
           predicates:
-            - Path=/api/v1/ban-check/**
+            - Path=/api/v1/book/**
 
 management:
   zipkin:

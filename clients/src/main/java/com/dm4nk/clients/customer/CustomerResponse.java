@@ -4,7 +4,6 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.time.Instant;
-import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -16,5 +15,4 @@ public class CustomerResponse {
     private String email;
     private Instant createdDate;
     private Instant lastModifiedDate;
-    private List<BookResponse> books;
 }

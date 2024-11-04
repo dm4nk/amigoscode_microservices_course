@@ -1,5 +1,6 @@
 package com.dm4nk.search.listener;
 
+import com.dm4nk.search.service.StreamService;
 import customer.public$.customer.Envelope;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,9 +14,14 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class KafkaConnectorConsumerListener {
+    private final StreamService streamService;
 
     @KafkaListener(topics = "customer.public.customer", batch = "true")
-    public void consumeMessage(List<ConsumerRecord<String, Envelope>> message) {
-        log.info("Consumed message: {}", message);
+    public void consumeMessage(List<ConsumerRecord<String, Envelope>> messages) {
+        log.info("Consumed message: {}", messages);
+
+        for (ConsumerRecord<String, Envelope> message : messages) {
+            streamService.stream(message.value());
+        }
     }
 }

@@ -1,5 +1,5 @@
 {
-  "name": "debezium-connector",
+  "name": "customer-connector",
   "config": {
     "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
     "plugin.name": "pgoutput",
@@ -9,6 +9,7 @@
     "database.password": "anime_the_best",
     "database.dbname": "customer",
     "database.server.name": "customer",
-    "table.include.list": "public.book,public.customer,public.customer_books"
+    "table.include.list": "public.customer",
+    "slot.name": "customer"
   }
 }
