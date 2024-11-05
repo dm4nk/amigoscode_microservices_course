@@ -1,9 +1,10 @@
 package com.dm4nk.customer.mapper;
 
-import com.dm4nk.clients.customer.CustomerCreationRequest;
+import com.dm4nk.clients.customer.CustomerRequest;
 import com.dm4nk.clients.customer.CustomerResponse;
 import com.dm4nk.customer.db.model.Customer;
 import org.mapstruct.Mapper;
+import org.mapstruct.MappingTarget;
 
 import java.util.List;
 
@@ -13,5 +14,7 @@ public interface CustomerMapper {
 
     CustomerResponse toCustomerResponse(Customer from);
 
-    Customer toCustomer(CustomerCreationRequest from);
+    Customer toCustomer(CustomerRequest from);
+
+    void updateCustomer(@MappingTarget Customer to, CustomerRequest from);
 }

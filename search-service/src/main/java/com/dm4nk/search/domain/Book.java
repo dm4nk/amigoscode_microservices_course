@@ -13,7 +13,4 @@ public class Book {
 
     @Field(type = FieldType.Keyword)
     private String author;
-
-    @Field(type = FieldType.Keyword)
-    private Boolean available;
 }

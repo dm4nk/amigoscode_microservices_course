@@ -5,7 +5,7 @@ import lombok.Value;
 
 @Value
 @Builder
-public class CustomerCreationRequest {
+public class CustomerRequest {
     String firstName;
     String lastName;
     String email;

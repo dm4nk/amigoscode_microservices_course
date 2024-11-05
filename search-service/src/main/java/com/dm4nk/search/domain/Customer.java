@@ -9,7 +9,7 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 
 import java.util.List;
 
-@Document(indexName = "searchservice-customer")
+@Document(indexName = "searchservice-customer", versionType = Document.VersionType.EXTERNAL)
 @Data
 @Builder
 public class Customer {
