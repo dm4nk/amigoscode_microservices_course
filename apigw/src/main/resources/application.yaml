@@ -15,6 +15,10 @@ spring:
           uri: lb://BOOK
           predicates:
             - Path=/api/v1/book/**
+        - id: search
+          uri: lb://SEARCH
+          predicates:
+            - Path=/api/v1/search/**
 
 management:
   zipkin:
