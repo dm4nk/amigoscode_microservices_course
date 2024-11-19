@@ -7,6 +7,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 import org.springframework.kafka.annotation.EnableKafka;
+import org.springframework.retry.annotation.EnableRetry;
 
 @SpringBootApplication(
         scanBasePackages = {
@@ -21,6 +22,7 @@ import org.springframework.kafka.annotation.EnableKafka;
         basePackages = "com.dm4nk.clients"
 )
 @EnableKafka
+@EnableRetry
 @PropertySources({
         @PropertySource("classpath:clients-${spring.profiles.active}.properties")
 })

@@ -8,10 +8,11 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
+import org.springframework.data.elasticsearch.core.query.SeqNoPrimaryTerm;
 
 import java.util.List;
 
-@Document(indexName = "searchservice-customer", versionType = Document.VersionType.EXTERNAL)
+@Document(indexName = "searchservice-customer")
 @Data
 @Builder
 @AllArgsConstructor
@@ -33,4 +34,6 @@ public class Customer {
 
     @Field(type = FieldType.Nested, includeInParent = true)
     private List<Book> books;
+
+    private SeqNoPrimaryTerm seqNoPrimaryTerm;
 }

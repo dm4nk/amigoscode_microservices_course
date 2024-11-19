@@ -2,6 +2,9 @@ server:
   port: 8097
 
 spring:
+  threads:
+    virtual:
+      enabled: true
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
