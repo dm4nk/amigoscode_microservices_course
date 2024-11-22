@@ -1,6 +1,8 @@
 package com.dm4nk.search.service;
 
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import com.dm4nk.search.domain.Customer;
+import com.dm4nk.search.exceptions.AccountCreationException;
 import com.dm4nk.search.mapper.RecordMapper;
 import com.dm4nk.search.repository.CustomerRepository;
 import customer.public$.customer.Envelope;
@@ -11,14 +13,15 @@ import org.springframework.data.elasticsearch.client.elc.NativeQueryBuilder;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
 import org.springframework.data.elasticsearch.core.query.ScriptType;
+import org.springframework.data.elasticsearch.core.query.SeqNoPrimaryTerm;
 import org.springframework.data.elasticsearch.core.query.UpdateQuery;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 @Service
@@ -27,8 +30,9 @@ public class StreamService {
     private final CustomerRepository customerRepository;
     private final RecordMapper recordMapper;
     private final ElasticsearchOperations operations;
+    private final ElasticsearchClient elasticsearchClient;
 
-    @Retryable(maxAttempts = 5, backoff = @Backoff(delay = 500), retryFor = {BulkFailureException.class, VersionConflictException.class})
+    @Retryable(maxAttempts = 5, backoff = @Backoff(delay = 500), retryFor = {BulkFailureException.class, VersionConflictException.class, AccountCreationException.class})
     public void streamCustomer(List<customer.public$.customer.Envelope> messages) {
 
         final var updatedCustomers = messages.stream()
@@ -40,7 +44,7 @@ public class StreamService {
 
     private Customer updateCustomer(Envelope message) {
         final var id = getId(message);
-        Customer customer = customerRepository.findById(id).orElse(Customer.builder().build());
+        final var customer = customerRepository.findById(id).orElseGet(() -> createCustomer(id));
 
         recordMapper.updateCustomer(customer, message.getAfter());
 
@@ -65,8 +69,8 @@ public class StreamService {
     }
 
     private static UpdateQuery createUpdateQuery(book.public$.book.Envelope message) {
-        Map<String, Object> params = new HashMap<>();
-        Map<String, String> book = new HashMap<>();
+        final var params = new HashMap<String, Object>();
+        final var book = new HashMap<String, String>();
         book.put("name", message.getAfter().getName());
         book.put("author", message.getAfter().getAuthor());
         params.put("book", book);
@@ -82,5 +86,25 @@ public class StreamService {
                 .withParams(params)
                 .withIndex("searchservice-customer")
                 .build();
+    }
+
+    private Customer createCustomer(String id) {
+        try {
+            final var createResponse = elasticsearchClient.create(b -> b
+                    .id(id)
+                    .document(Customer.builder().id(id).build())
+                    .index("searchservice-customer")
+            );
+
+            final var seqNoPrimaryTerm = new SeqNoPrimaryTerm(createResponse.seqNo(), createResponse.primaryTerm());
+            return Customer.builder().id(id)
+                    .seqNoPrimaryTerm(seqNoPrimaryTerm)
+                    .build();
+        } catch (IOException e) {
+            if (e.getMessage().contains("version_conflict_engine_exception")) {
+                throw new AccountCreationException();
+            }
+            throw new RuntimeException(e);
+        }
     }
 }

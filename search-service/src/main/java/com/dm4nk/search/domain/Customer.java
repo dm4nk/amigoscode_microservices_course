@@ -1,5 +1,6 @@
 package com.dm4nk.search.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -35,5 +36,6 @@ public class Customer {
     @Field(type = FieldType.Nested, includeInParent = true)
     private List<Book> books;
 
+    @JsonIgnore
     private SeqNoPrimaryTerm seqNoPrimaryTerm;
 }
