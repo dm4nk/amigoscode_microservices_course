@@ -5,8 +5,12 @@ import com.dm4nk.search.domain.Customer;
 import com.dm4nk.search.exceptions.AccountCreationException;
 import com.dm4nk.search.mapper.RecordMapper;
 import com.dm4nk.search.repository.CustomerRepository;
+import com.google.common.collect.Sets;
 import customer.public$.customer.Envelope;
 import lombok.AllArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.ListUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.data.elasticsearch.BulkFailureException;
 import org.springframework.data.elasticsearch.VersionConflictException;
 import org.springframework.data.elasticsearch.client.elc.NativeQueryBuilder;
@@ -23,6 +27,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -34,19 +40,52 @@ public class StreamService {
 
     @Retryable(maxAttempts = 5, backoff = @Backoff(delay = 500), retryFor = {BulkFailureException.class, VersionConflictException.class, AccountCreationException.class})
     public void streamCustomer(List<customer.public$.customer.Envelope> messages) {
+        final var customerIdsFromMessages = getCustomerIdsFromMessages(messages);
 
-        final var updatedCustomers = messages.stream()
-                .map(this::updateCustomer)
+        // todo optimize
+        final var existingCustomers = findCustomersForUpdate(customerIdsFromMessages);
+        final var existingCustomerIds = extractExistingCustomerIds(existingCustomers);
+        final var absentCustomerIds = Sets.difference(customerIdsFromMessages, existingCustomerIds);
+        final var customersForUpdate = getCustomersForUpdate(absentCustomerIds, existingCustomers);
+
+        final var updatedCustomers = customersForUpdate.stream()
+                .map(customer -> this.updateCustomer(customer, messages))
                 .toList();
 
         customerRepository.saveAll(updatedCustomers);
     }
 
-    private Customer updateCustomer(Envelope message) {
-        final var id = getId(message);
-        final var customer = customerRepository.findById(id).orElseGet(() -> createCustomer(id));
+    private List<Customer> getCustomersForUpdate(Set<String> absentCustomerIds, List<Customer> existingCustomers) {
+        if (CollectionUtils.isEmpty(absentCustomerIds)) {
+            return existingCustomers;
+        } else {
+            final var createdCustomers = absentCustomerIds.stream().map(this::createCustomer).toList();
+            return ListUtils.union(existingCustomers, createdCustomers);
+        }
+    }
 
-        recordMapper.updateCustomer(customer, message.getAfter());
+    private static Set<String> extractExistingCustomerIds(List<Customer> customersForUpdate) {
+        return customersForUpdate.stream()
+                .map(Customer::getId)
+                .collect(Collectors.toUnmodifiableSet());
+    }
+
+    private List<Customer> findCustomersForUpdate(Set<String> customerIdsFromMessages) {
+        return customerRepository.findAllByIdIn(customerIdsFromMessages);
+    }
+
+    private Set<String> getCustomerIdsFromMessages(List<Envelope> messages) {
+        return messages.stream()
+                .map(this::getId)
+                .collect(Collectors.toUnmodifiableSet());
+    }
+
+    private Customer updateCustomer(Customer customer, List<Envelope> messages) {
+        final var relevantMessages = messages.stream()
+                .filter(message -> StringUtils.equals(getId(message), customer.getId()))
+                .toList();
+
+        relevantMessages.forEach(message -> recordMapper.updateCustomer(customer, message.getAfter()));
 
         return customer;
     }
