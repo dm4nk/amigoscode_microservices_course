@@ -38,7 +38,7 @@ public class StreamService {
     private final ElasticsearchOperations operations;
     private final ElasticsearchClient elasticsearchClient;
 
-    @Retryable(maxAttempts = 5, backoff = @Backoff(delay = 500), retryFor = {BulkFailureException.class, VersionConflictException.class, AccountCreationException.class})
+    @Retryable(maxAttempts = 5, backoff = @Backoff(delay = 100), retryFor = {BulkFailureException.class, VersionConflictException.class, AccountCreationException.class})
     public void streamCustomer(List<customer.public$.customer.Envelope> messages) {
         final var customerIdsFromMessages = getCustomerIdsFromMessages(messages);
 
@@ -51,6 +51,10 @@ public class StreamService {
         final var updatedCustomers = customersForUpdate.stream()
                 .map(customer -> this.updateCustomer(customer, messages))
                 .toList();
+
+        if (customersForUpdate.stream().map(Customer::getId).anyMatch("5b2abab3-8f12-4e7f-9d4a-d0e69c7012fe"::equals)) {
+            throw new NullPointerException();
+        }
 
         customerRepository.saveAll(updatedCustomers);
     }
@@ -94,7 +98,7 @@ public class StreamService {
         return message.getAfter().getId();
     }
 
-    @Retryable(maxAttempts = 5, backoff = @Backoff(delay = 500), retryFor = {BulkFailureException.class, VersionConflictException.class})
+    @Retryable(maxAttempts = 5, backoff = @Backoff(delay = 100), retryFor = {BulkFailureException.class, VersionConflictException.class})
     public void streamBook(List<book.public$.book.Envelope> messages) {
 
         final var queries = messages.stream()

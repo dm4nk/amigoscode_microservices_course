@@ -12,6 +12,12 @@ spring:
     name: search
   kafka:
     bootstrap-servers: localhost:29092
+    producer:
+      client-id: ${spring.application.name}
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
+      properties:
+        schema.registry.url: http://localhost:8081
     consumer:
       group-id: ${spring.application.name}
       keyDeserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
