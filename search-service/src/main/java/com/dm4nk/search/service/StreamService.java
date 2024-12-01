@@ -43,6 +43,13 @@ public class StreamService {
         final var customerIdsFromMessages = getCustomerIdsFromMessages(messages);
 
         // todo optimize
+
+        // todo переписать сущности в эластике так, чтобы они сохраняли дату ее последнего обновления из базы
+
+        // todo сделать хотя бы 1 ретрай
+
+        //
+
         final var existingCustomers = findCustomersForUpdate(customerIdsFromMessages);
         final var existingCustomerIds = extractExistingCustomerIds(existingCustomers);
         final var absentCustomerIds = Sets.difference(customerIdsFromMessages, existingCustomerIds);
@@ -52,9 +59,9 @@ public class StreamService {
                 .map(customer -> this.updateCustomer(customer, messages))
                 .toList();
 
-        if (customersForUpdate.stream().map(Customer::getId).anyMatch("5b2abab3-8f12-4e7f-9d4a-d0e69c7012fe"::equals)) {
-            throw new NullPointerException();
-        }
+//        if (customersForUpdate.stream().map(Customer::getId).anyMatch("5b2abab3-8f12-4e7f-9d4a-d0e69c7012fe"::equals)) {
+//            throw new NullPointerException();
+//        }
 
         customerRepository.saveAll(updatedCustomers);
     }
