@@ -4,6 +4,12 @@ server:
 spring:
   application:
     name: api-gateway
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8180/auth/realms/main
+          audiences: api
   cloud:
     gateway:
       routes:
@@ -19,6 +25,10 @@ spring:
           uri: lb://SEARCH
           predicates:
             - Path=/api/v1/search/**
+        - id: auth
+          uri: http://localhost:8180
+          predicates:
+            - Path=/auth/**
 
 management:
   zipkin:

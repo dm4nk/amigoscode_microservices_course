@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer and Book Manager</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+
+
+    <div class="container mt-5">
+        <h2>Customer and Book Management</h2>
+
+        <form id="loginForm" style="display: none">
+            <input type="text" id="username" placeholder="Username" required />
+            <input type="password" id="password" placeholder="Password" required />
+            <button type="submit">Login</button>
+        </form>
+
+        <div id="mainContainer" style="display: none">
+            <div class="mb-4">
+                <h4>Create Customer</h4>
+                <form id="createCustomerForm">
+                    <input type="text" id="firstName" placeholder="First Name" required class="form-control mb-2">
+                    <input type="text" id="lastName" placeholder="Last Name" required class="form-control mb-2">
+                    <input type="email" id="email" placeholder="Email" required class="form-control mb-2">
+                    <button type="submit" class="btn btn-primary">Create Customer</button>
+                </form>
+            </div>
+
+            <div class="mb-4">
+                <h4>Create Book</h4>
+                <form id="createBookForm">
+                    <input type="text" id="bookName" placeholder="Book Name" required class="form-control mb-2">
+                    <input type="text" id="bookAuthor" placeholder="Author" required class="form-control mb-2">
+                    <button type="submit" class="btn btn-primary">Create Book</button>
+                </form>
+            </div>
+
+            <div class="mb-4">
+                <h4>Search Customers</h4>
+                <input type="text" id="searchInput" placeholder="Search" class="form-control mb-2">
+                <button id="searchButton" class="btn btn-primary">Search</button>
+                <div id="searchResults" class="mt-2"></div>
+            </div>
+
+            <div class="mb-4">
+                <h4>Assign Book to Customer</h4>
+                <input type="text" id="bookId" placeholder="Book ID" required class="form-control mb-2">
+                <input type="text" id="customerId" placeholder="Customer ID" required class="form-control mb-2">
+                <button id="assignButton" class="btn btn-success">Assign Book</button>
+            </div>
+
+            <div class="mb-4">
+                <h4>Unassign Book from Customer</h4>
+                <input type="text" id="unassignBookId" placeholder="Book ID" required class="form-control mb-2">
+                <button id="unassignButton" class="btn btn-danger">Unassign Book</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        checkAccessToken();
+
+        const apiUrl = 'http://localhost:8099/api/v1';
+
+        document.getElementById('createCustomerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const accessToken = localStorage.getItem('accessToken');
+            const customerData = {
+                firstName: document.getElementById('firstName').value,
+                lastName: document.getElementById('lastName').value,
+                email: document.getElementById('email').value,
+            };
+
+            const response = await fetch(`${apiUrl}/customer`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}` },
+                body: JSON.stringify(customerData),
+            });
+            const data = await response.json();
+            alert('Customer Created: ' + JSON.stringify(data));
+        });
+
+        document.getElementById('createBookForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const accessToken = localStorage.getItem('accessToken');
+            const bookData = {
+                name: document.getElementById('bookName').value,
+                author: document.getElementById('bookAuthor').value,
+            };
+
+            const response = await fetch(`${apiUrl}/book`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}` },
+                body: JSON.stringify(bookData),
+            });
+            const data = await response.json();
+            alert('Book Created: ' + JSON.stringify(data));
+        });
+
+        document.getElementById('searchButton').addEventListener('click', async () => {
+            const accessToken = localStorage.getItem('accessToken');
+            const searchText = document.getElementById('searchInput').value;
+            const response = await fetch(`${apiUrl}/search/customer/search`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}` },
+                body: JSON.stringify({ text: searchText }),
+            });
+            const results = await response.json();
+            document.getElementById('searchResults').innerHTML = JSON.stringify(results);
+        });
+
+        document.getElementById('assignButton').addEventListener('click', async () => {
+            const accessToken = localStorage.getItem('accessToken');
+            const bookId = document.getElementById('bookId').value;
+            const customerId = document.getElementById('customerId').value;
+
+            const response = await fetch(`${apiUrl}/book/${bookId}/assign`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}` },
+                body: JSON.stringify({ customerId }),
+            });
+            const data = await response.json();
+            alert('Book Assigned: ' + JSON.stringify(data));
+        });
+
+        document.getElementById('unassignButton').addEventListener('click', async () => {
+            const accessToken = localStorage.getItem('accessToken');
+            const unassignBookId = document.getElementById('unassignBookId').value;
+
+            const response = await fetch(`${apiUrl}/book/${unassignBookId}/unassign`, {
+                method: 'DELETE',
+                headers: {'Authorization': `Bearer ${accessToken}`}
+            });
+            const data = await response.json();
+            alert('Book Unassigned: ' + JSON.stringify(data));
+        });
+
+        // LOGIN
+
+        async function login(username, password) {
+            const tokenUrl = 'http://localhost:8099/auth/realms/main/protocol/openid-connect/token';
+            const clientId = 'admin'; // Replace with your client ID
+
+            const params = new URLSearchParams();
+            params.append('client_id', clientId);
+            params.append('username', username);
+            params.append('password', password);
+            params.append('grant_type', 'password');
+
+            try {
+                const response = await fetch(tokenUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: params,
+                });
+
+                if (!response.ok) {
+                    throw new Error('Login failed');
+                }
+
+                const data = await response.json();
+                const accessToken = data.access_token;
+                const refreshToken = data.refresh_token;
+
+                // Store tokens securely. You might use localStorage or a state management library.
+                localStorage.setItem('accessToken', accessToken);
+                localStorage.setItem('refreshToken', refreshToken);
+
+                console.log('Login successful! Access Token:', accessToken);
+
+                // Start the interval to refresh the access token every minute
+                setInterval(refreshAccessToken, 60 * 1000); // 60 seconds
+
+                // Show other forms after successful login
+                checkAccessToken(); // Refresh the visibility check
+            } catch (error) {
+                console.error('Error during login:', error);
+            }
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            login(username, password);
+        });
+
+        async function refreshAccessToken() {
+            const tokenUrl = 'http://localhost:8099/auth/realms/main/protocol/openid-connect/token';
+            const clientId = 'admin'; // Replace with your client ID
+            const refreshToken = localStorage.getItem('refreshToken');
+
+            const params = new URLSearchParams();
+            params.append('client_id', clientId);
+            params.append('refresh_token', refreshToken);
+            params.append('grant_type', 'refresh_token');
+
+            try {
+                const response = await fetch(tokenUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: params,
+                });
+
+                if (!response.ok) {
+                    throw new Error('Token refresh failed');
+                }
+
+                const data = await response.json();
+                const newAccessToken = data.access_token;
+
+                // Update the access token
+                localStorage.setItem('accessToken', newAccessToken);
+
+                console.log('Access token refreshed:', newAccessToken);
+            } catch (error) {
+                console.error('Error refreshing access token:', error);
+                // Handle logout if refresh fails
+            }
+        }
+
+        function checkAccessToken() {
+            const accessToken = localStorage.getItem('accessToken');
+
+            if (accessToken) {
+                // Access token exists, show other forms
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('mainContainer').style.display = 'block';
+            } else {
+                // No access token, show login form
+                document.getElementById('loginForm').style.display = 'block';
+                document.getElementById('mainContainer').style.display = 'none';
+            }
+        }
+
+    </script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
