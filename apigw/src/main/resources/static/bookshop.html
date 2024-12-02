@@ -58,6 +58,13 @@
                 <input type="text" id="unassignBookId" placeholder="Book ID" required class="form-control mb-2">
                 <button id="unassignButton" class="btn btn-danger">Unassign Book</button>
             </div>
+
+            <div class="mb-4">
+                <h4>View book catalog</h4>
+                <input type="text" id="searchBookInput" placeholder="Search" class="form-control mb-2">
+                <button id="searchBookButton" class="btn btn-primary">Search</button>
+                <div id="searchBookResults" class="mt-2"></div>
+            </div>
         </div>
     </div>
 
@@ -111,6 +118,17 @@
             });
             const results = await response.json();
             document.getElementById('searchResults').innerHTML = JSON.stringify(results);
+        });
+
+        document.getElementById('searchBookButton').addEventListener('click', async () => {
+            const accessToken = localStorage.getItem('accessToken');
+            const searchText = document.getElementById('searchBookInput').value;
+            const response = await fetch(`${apiUrl}/book?author=${searchText}&name=${searchText}`, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}` },
+            });
+            const results = await response.json();
+            document.getElementById('searchBookResults').innerHTML = JSON.stringify(results);
         });
 
         document.getElementById('assignButton').addEventListener('click', async () => {
