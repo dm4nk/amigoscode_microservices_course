@@ -2,17 +2,12 @@ version: "3.7"
 services:
   postgres:
     container_name: postgres
-    image: debezium/postgres:15
+    image: postgres:15.4-bullseye
     ports:
       - "5431:5432"
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-dm4nk}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-anime_the_best}
-      PGDATA: /data/postgres
-    volumes:
-      - type: volume
-        source: postgres
-        target: /data/postgres
+      POSTGRES_USER: ${POSTGRES_USER:-operator}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-operator}
 
   zipkin:
     image: openzipkin/zipkin
@@ -42,18 +37,6 @@ services:
     depends_on:
       - zookeeper
 
-  schema-registry:
-    image: confluentinc/cp-schema-registry:5.5.3
-    ports:
-      - 8081:8081
-    environment:
-      - SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL=zookeeper:2181
-      - SCHEMA_REGISTRY_HOST_NAME=schema-registry
-      - SCHEMA_REGISTRY_LISTENERS=http://schema-registry:8081,http://localhost:8081
-    depends_on:
-      - zookeeper
-      - kafka
-
   kafka-ui:
     image: provectuslabs/kafka-ui
     container_name: kafka-ui
@@ -63,49 +46,6 @@ services:
       - KAFKA_CLUSTERS_0_NAME=local
       - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9092
       - KAFKA_CLUSTERS_0_ZOOKEEPER=zookeeper:2181
-      - KAFKA_CLUSTERS_0_SCHEMAREGISTRY=http://schema-registry:8081
-
-  debezium:
-    image: debezium/connect:1.4
-    container_name: debezium
-    ports:
-      - 8083:8083
-    environment:
-      BOOTSTRAP_SERVERS: kafka:9092
-      GROUP_ID: 1
-      CONFIG_STORAGE_TOPIC: connect_configs
-      OFFSET_STORAGE_TOPIC: connect_offsets
-      KEY_CONVERTER: io.confluent.connect.avro.AvroConverter
-      VALUE_CONVERTER: io.confluent.connect.avro.AvroConverter
-      CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL: http://schema-registry:8081
-      CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL: http://schema-registry:8081
-    depends_on:
-      - kafka
-
-  elasticsearch:
-    image: elasticsearch:7.17.24
-    ports:
-      - 9300:9300
-      - 9200:9200
-    environment:
-      - node.name=elasticsearch
-      - discovery.type=single-node
-      - cluster.name=docker-cluster
-      - bootstrap.memory_lock=true
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-
-  kibana:
-    image: kibana:7.2.0
-    ports:
-      - 5601:5601
-    environment:
-      ELASTICSEARCH_URL: http://elasticsearch:9300
-    depends_on:
-      - elasticsearch
 
   keycloak:
     image: quay.io/keycloak/keycloak:16.1.1
@@ -116,12 +56,9 @@ services:
       DB_ADDR: postgres
       DB_DATABASE: keycloakdb
       DB_SCHEMA: public
-      DB_USER: dm4nk
-      DB_PASSWORD: anime_the_best
-      KEYCLOAK_USER: dm4nk
-      KEYCLOAK_PASSWORD: anime_the_best
+      DB_USER: operator
+      DB_PASSWORD: operator
+      KEYCLOAK_USER: operator
+      KEYCLOAK_PASSWORD: operator
     depends_on:
       - postgres
-
-volumes:
-  postgres:

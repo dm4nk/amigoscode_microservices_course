@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer and Transaction Manager</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .card {
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary, .btn-success, .btn-danger {
+            border-radius: 20px;
+        }
+
+        .form-control {
+            border-radius: 10px;
+        }
+
+        #mainContainer {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="#">Customer & Transaction Manager</a>
+    </div>
+</nav>
+
+<div class="container mt-5">
+    <form id="loginForm" class="card p-4" style="max-width: 400px; margin: auto; display: none;">
+        <h5 class="mb-3 text-center">Login</h5>
+        <div class="mb-3">
+            <input type="text" id="username" class="form-control" placeholder="Username" required>
+        </div>
+        <div class="mb-3">
+            <input type="password" id="password" class="form-control" placeholder="Password" required>
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Login</button>
+    </form>
+
+    <div id="mainContainer" style="display: none;">
+        <div class="row">
+            <!-- Create Customer -->
+            <div class="col-md-6 mb-4">
+                <div class="card p-4">
+                    <h5>Create Customer</h5>
+                    <form id="createCustomerForm">
+                        <div class="mb-3">
+                            <input type="text" id="firstName" placeholder="First Name" required class="form-control">
+                        </div>
+                        <div class="mb-3">
+                            <input type="text" id="lastName" placeholder="Last Name" required class="form-control">
+                        </div>
+                        <div class="mb-3">
+                            <input type="email" id="email" placeholder="Email" required class="form-control">
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fa fa-user-plus"></i> Create Customer
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Create Transaction -->
+            <div class="col-md-6 mb-4">
+                <div class="card p-4">
+                    <h5>Create Transaction</h5>
+                    <form id="createTransactionForm">
+                        <div class="mb-3">
+                            <input type="text" id="transactionCustomerId" placeholder="Customer Id" required
+                                   class="form-control">
+                        </div>
+                        <div class="mb-3">
+                            <input type="text" id="transactionMessage" placeholder="Message" required
+                                   class="form-control">
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fa fa-Transaction"></i> Create Transaction
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Search Customers -->
+            <div class="col-md-6 mb-4">
+                <div class="card p-4">
+                    <h5>Search Customers</h5>
+                    <div class="mb-3">
+                        <input type="text" id="searchCustomerInput" placeholder="Search" class="form-control">
+                    </div>
+                    <button id="searchCustomerButton" class="btn btn-primary w-100">
+                        <i class="fa fa-search"></i> Search
+                    </button>
+
+                    <div class="container table-container">
+                        <h3 class="text-center mb-4">Customer Details</h3>
+                        <table class="table table-striped table-bordered">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>First Name</th>
+                                <th>Last Name</th>
+                                <th>Email</th>
+                            </tr>
+                            </thead>
+                            <tbody id="customerTableBody">
+                            <!-- Data will be injected dynamically here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- View Transaction Catalog -->
+            <div class="col-md-6 mb-4">
+                <div class="card p-4">
+                    <h5>View Transactions</h5>
+                    <div class="mb-3">
+                        <input type="text" id="searchTransactionInput" placeholder="Search" class="form-control">
+                    </div>
+                    <button id="searchTransactionButton" class="btn btn-primary w-100">
+                        <i class="fa fa-Transaction-open"></i> Search
+                    </button>
+                    <h3 class="text-center mt-5 mb-4">Transaction Details</h3>
+
+                    <table class="table table-striped table-bordered">
+                        <thead>
+                        <tr>
+                            <th>Customer ID</th>
+                            <th>Transaction ID</th>
+                            <th>Message</th>
+                        </tr>
+                        </thead>
+                        <tbody id="transactionTableBody">
+                        <!-- Data will be injected dynamically here -->
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+
+            <!-- Change Plan -->
+            <div class="col-md-6 mb-4">
+                <div class="card p-4">
+                    <h5>Create Customer</h5>
+                    <form id="changePlanForm">
+                        <div class="mb-3">
+                            <input type="text" id="planCustomerId" placeholder="Customer Id" required class="form-control">
+                        </div>
+                        <div class="mb-3">
+                            <input type="text" id="planCustomerTarifPlanName" placeholder="Tarif Plan" required class="form-control">
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fa fa-user-plus"></i> Change Plan
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+<script>
+    checkAccessToken();
+
+    const apiUrl = 'http://localhost:8099/api/v1';
+
+    document.getElementById('createCustomerForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const accessToken = localStorage.getItem('accessToken');
+        const customerData = {
+            firstName: document.getElementById('firstName').value,
+            lastName: document.getElementById('lastName').value,
+            email: document.getElementById('email').value,
+        };
+
+        const response = await fetch(`${apiUrl}/customer`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}`},
+            body: JSON.stringify(customerData),
+        });
+        const data = await response.json();
+        alert('Customer Created: ' + JSON.stringify(data));
+    });
+
+    document.getElementById('changePlanForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const accessToken = localStorage.getItem('accessToken');
+        const customerData = {
+            customerId: document.getElementById('planCustomerId').value,
+            tarifPlan: document.getElementById('planCustomerTarifPlanName').value
+        };
+
+        const response = await fetch(`${apiUrl}/customer/plan`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}`},
+            body: JSON.stringify(customerData),
+        });
+
+        alert('Plan Changed:');
+    });
+
+    document.getElementById('searchCustomerButton').addEventListener('click', async () => {
+        const accessToken = localStorage.getItem('accessToken');
+        const searchText = document.getElementById('searchCustomerInput').value;
+        const response = await fetch(`${apiUrl}/customer/search/${searchText}`, {
+            method: 'GET',
+            headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}`},
+        });
+        const results = await response.json();
+
+        const customerTableBody = document.getElementById("customerTableBody");
+        results.forEach(customer => {
+            const row = `
+                <tr>
+                    <td>${customer.id}</td>
+                    <td>${customer.firstName}</td>
+                    <td>${customer.lastName}</td>
+                    <td>${customer.email}</td>
+                </tr>
+            `;
+            customerTableBody.innerHTML += row;
+        });
+    });
+
+    document.getElementById('createTransactionForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const accessToken = localStorage.getItem('accessToken');
+        const TransactionData = {
+            message: document.getElementById('transactionMessage').value,
+            customerId: document.getElementById('transactionCustomerId').value,
+        };
+
+        const response = await fetch(`${apiUrl}/transaction`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}`},
+            body: JSON.stringify(TransactionData),
+        });
+        const data = await response.json();
+        alert('Transaction Created: ' + JSON.stringify(data));
+    });
+
+    document.getElementById('searchTransactionButton').addEventListener('click', async () => {
+        const accessToken = localStorage.getItem('accessToken');
+        const searchData = {
+            customerId: document.getElementById('searchTransactionInput').value,
+        };
+        const response = await fetch(`${apiUrl}/transaction/search`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}`},
+            body: JSON.stringify(searchData),
+        });
+        const results = await response.json();
+        const transactionTableBody = document.getElementById("transactionTableBody");
+        results.forEach(transaction => {
+            const row = `
+                <tr>
+                    <td>${transaction.customerId}</td>
+                    <td>${transaction.id}</td>
+                    <td>${transaction.message}</td>
+                </tr>
+            `;
+            transactionTableBody.innerHTML += row;
+        });
+    });
+
+    // LOGIN
+
+    async function login(username, password) {
+        const tokenUrl = 'http://localhost:8099/auth/realms/operator/protocol/openid-connect/token';
+        const clientId = 'operator';
+
+        const params = new URLSearchParams();
+        params.append('client_id', clientId);
+        params.append('username', username);
+        params.append('password', password);
+        params.append('grant_type', 'password');
+
+        try {
+            const response = await fetch(tokenUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: params,
+            });
+
+            if (!response.ok) {
+                throw new Error('Login failed');
+            }
+
+            const data = await response.json();
+            const accessToken = data.access_token;
+            const refreshToken = data.refresh_token;
+
+            // Store tokens securely. You might use localStorage or a state management library.
+            localStorage.setItem('accessToken', accessToken);
+            localStorage.setItem('refreshToken', refreshToken);
+
+            console.log('Login successful! Access Token:', accessToken);
+
+            // Start the interval to refresh the access token every minute
+            setInterval(refreshAccessToken, 60 * 1000); // 60 seconds
+
+            // Show other forms after successful login
+            checkAccessToken(); // Refresh the visibility check
+        } catch (error) {
+            console.error('Error during login:', error);
+        }
+    }
+
+    document.getElementById('loginForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        login(username, password);
+    });
+
+    async function refreshAccessToken() {
+        const tokenUrl = 'http://localhost:8099/auth/realms/operator/protocol/openid-connect/token';
+        const clientId = 'operator';
+        const refreshToken = localStorage.getItem('refreshToken');
+
+        const params = new URLSearchParams();
+        params.append('client_id', clientId);
+        params.append('refresh_token', refreshToken);
+        params.append('grant_type', 'refresh_token');
+
+        try {
+            const response = await fetch(tokenUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: params,
+            });
+
+            if (!response.ok) {
+                throw new Error('Token refresh failed');
+            }
+
+            const data = await response.json();
+            const newAccessToken = data.access_token;
+
+            // Update the access token
+            localStorage.setItem('accessToken', newAccessToken);
+
+            console.log('Access token refreshed:', newAccessToken);
+        } catch (error) {
+            console.error('Error refreshing access token:', error);
+            // Handle logout if refresh fails
+        }
+    }
+
+    function checkAccessToken() {
+        const accessToken = localStorage.getItem('accessToken');
+
+        if (accessToken) {
+            // Access token exists, show other forms
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('mainContainer').style.display = 'block';
+        } else {
+            // No access token, show login form
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('mainContainer').style.display = 'none';
+        }
+    }
+
+</script>
+</body>
+</html>

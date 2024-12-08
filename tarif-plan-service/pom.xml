@@ -7,7 +7,25 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <packaging>jar</packaging>
-    <artifactId>customer</artifactId>
+    <artifactId>tarif-plan-service</artifactId>
+
+    <repositories>
+        <repository>
+            <id>confluent</id>
+            <url>https://packages.confluent.io/maven</url>
+        </repository>
+    </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>central</id>
+            <url>https://repo1.maven.org/maven2</url>
+        </pluginRepository>
+        <pluginRepository>
+            <id>confluent</id>
+            <url>https://packages.confluent.io/maven</url>
+        </pluginRepository>
+    </pluginRepositories>
 
     <build>
         <plugins>
@@ -36,14 +54,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
@@ -94,11 +104,14 @@
             <artifactId>spring-kafka</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
+            <version>1.6.0.Beta1</version>
+        </dependency>
+        <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-collections4</artifactId>
             <version>4.4</version>
         </dependency>
     </dependencies>
-
-
 </project>

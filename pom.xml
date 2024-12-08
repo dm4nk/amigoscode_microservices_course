@@ -2,7 +2,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.dm4nk</groupId>
+    <groupId>com.operator</groupId>
     <artifactId>microservices_course</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
@@ -11,7 +11,7 @@
         <module>clients</module>
         <module>apigw</module>
         <module>customer</module>
-        <module>search-service</module>
+        <module>tarif-plan-service</module>
     </modules>
     <!--  <name>microservices_course</name>-->
 

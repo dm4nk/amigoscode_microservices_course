@@ -8,8 +8,8 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8180/auth/realms/main
-          audiences: api
+          issuer-uri: http://localhost:8180/auth/realms/operator
+          audiences: operator
   cloud:
     gateway:
       routes:
@@ -17,14 +17,10 @@ spring:
           uri: lb://CUSTOMER
           predicates:
             - Path=/api/v1/customer/**
-        - id: book
-          uri: lb://BOOK
+        - id: TRANSACTION
+          uri: lb://TRANSACTION
           predicates:
-            - Path=/api/v1/book/**
-        - id: search
-          uri: lb://SEARCH
-          predicates:
-            - Path=/api/v1/search/**
+            - Path=/api/v1/transaction/**
         - id: auth
           uri: http://localhost:8180
           predicates:
