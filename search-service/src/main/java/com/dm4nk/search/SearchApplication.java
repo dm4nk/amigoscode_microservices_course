@@ -12,7 +12,6 @@ import org.springframework.retry.annotation.EnableRetry;
 @SpringBootApplication(
         scanBasePackages = {
                 "com.dm4nk.search",
-                "com.dm4nk.aop.logger",
         }
 )
 @EnableElasticsearchRepositories(
