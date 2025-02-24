@@ -10,10 +10,3 @@ eureka:
     fetch-registry: false
     register-with-eureka: false
 
-management:
-  zipkin:
-    tracing:
-      endpoint: http://zipkin:9411/api/v2/spans
-  tracing:
-    sampling:
-      probability: 0.0

@@ -28,14 +28,6 @@ spring:
         schema.registry.url: http://localhost:8081
         specific.avro.reader: true
 
-management:
-  zipkin:
-    tracing:
-      endpoint: http://localhost:9411/api/v2/spans
-  tracing:
-    sampling:
-      probability: 1.0
-
 elasticsearch:
   host-and-port: localhost:9200
   customer-index-name: searchservice-customer
