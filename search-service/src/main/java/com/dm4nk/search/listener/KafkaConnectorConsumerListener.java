@@ -20,7 +20,6 @@ public class KafkaConnectorConsumerListener {
     @KafkaListener(topics = "customer.public.customer", batch = "true")
     public void consumeCustomerMessage(List<com.dm4nk.search.avro.Customer> messages) {
         log.info("Consumed message: {}", messages);
-
         try {
             streamService.streamCustomer(messages);
         } catch (Exception e) {
