@@ -10,6 +10,9 @@
     "database.dbname": "customer",
     "database.server.name": "customer",
     "table.include.list": "public.customer",
-    "slot.name": "customer"
+    "slot.name": "customer",
+    "transforms": "AddNamespace",
+    "transforms.AddNamespace.type": "org.apache.kafka.connect.transforms.SetSchemaMetadata$Value",
+    "transforms.AddNamespace.schema.name": "com.dm4nk.search.avro.Customer"
   }
 }
