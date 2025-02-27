@@ -145,7 +145,10 @@
             <artifactId>guava</artifactId>
             <version>32.1.2-jre</version>
         </dependency>
+        <dependency>
+            <groupId>com.dm4nk</groupId>
+            <artifactId>spring-boot-starter-monitoring</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
-
-
 </project>

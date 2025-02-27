@@ -123,5 +123,42 @@ services:
     depends_on:
       - postgres
 
+  # monitoring
+
+  logstash:
+    image: logstash:8.17.0
+    ports:
+      - 5046:5046
+      - 5000:5000/tcp
+    volumes:
+      - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro
+      - ./logstash/pipeline:/usr/share/logstash/pipeline:ro
+
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - ./prometheus/:/etc/prometheus/
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    ports:
+      - 9090:9090
+
+  grafana:
+    image: grafana/grafana:9.2.0
+    depends_on:
+      - prometheus
+    ports:
+      - 3000:3000
+    volumes:
+      - ./grafana/provisioning/:/etc/grafana/provisioning/
+    env_file:
+      - ./grafana/config.monitoring
+
+  kafka-exporter:
+    image: danielqsj/kafka-exporter
+    command: [ "--kafka.server=kafka:9092" ]
+    ports:
+      - 9308:9308
+
 volumes:
   postgres:

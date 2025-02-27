@@ -5,6 +5,8 @@ import com.dm4nk.clients.customer.CustomerResponse;
 import com.dm4nk.customer.db.model.Customer;
 import com.dm4nk.customer.db.repository.CustomerRepository;
 import com.dm4nk.customer.mapper.CustomerMapper;
+import com.dm4nk.monitoring.common.Level;
+import com.dm4nk.monitoring.logger.annotations.Loggable;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +18,7 @@ import java.util.UUID;
 @Slf4j
 @Service
 @AllArgsConstructor
+@Loggable(level = Level.INFO)
 public class CustomerService {
     private final CustomerRepository customerRepository;
     private final CustomerMapper customerMapper;

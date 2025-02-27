@@ -31,3 +31,27 @@ spring:
 elasticsearch:
   host-and-port: localhost:9200
   customer-index-name: searchservice-customer
+
+logger:
+  enabled: true
+
+logtrace:
+  enabled: true
+  before-message-prefix: '['
+  after-message-prefix: '['
+
+logging:
+  level:
+    com.dm4nk: info
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus
+  zipkin:
+    tracing:
+      endpoint: http://localhost:9411/api/v2/spans
+  tracing:
+    sampling:
+      probability: 1.0
