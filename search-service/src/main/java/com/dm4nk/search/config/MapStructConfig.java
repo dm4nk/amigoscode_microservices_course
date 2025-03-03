@@ -7,8 +7,6 @@ import org.mapstruct.ReportingPolicy;
 
 /**
  * Конфигурация для MapStruct.
- *
- * @author Ruslan Bondarenko
  */
 @MapperConfig(
         componentModel = "spring",
