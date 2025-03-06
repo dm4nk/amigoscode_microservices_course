@@ -162,5 +162,16 @@ services:
     depends_on:
       - kafka
 
+  postgres-exporter:
+    image: quay.io/prometheuscommunity/postgres-exporter
+    ports:
+      - 9187:9187
+    environment:
+      DATA_SOURCE_URI: postgres:5432/postgres?sslmode=disable
+      DATA_SOURCE_USER: ${POSTGRES_USER:-dm4nk}
+      DATA_SOURCE_PASS: ${POSTGRES_PASSWORD:-anime_the_best}
+    depends_on:
+      - postgres
+
 volumes:
   postgres:
