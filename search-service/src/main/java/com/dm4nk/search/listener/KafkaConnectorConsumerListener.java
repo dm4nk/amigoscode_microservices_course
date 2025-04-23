@@ -15,7 +15,8 @@ import java.util.List;
 @Slf4j
 public class KafkaConnectorConsumerListener {
     private final StreamService streamService;
-    private final KafkaTemplate<String, com.dm4nk.search.avro.Customer> kafkaTemplate;
+    private final KafkaTemplate<String, com.dm4nk.search.avro.Customer> customerKafkaTemplate;
+    private final KafkaTemplate<String, com.dm4nk.search.avro.Book> bookKafkaTemplate;
 
     @KafkaListener(topics = "customer.public.customer", batch = "true")
     public void consumeCustomerMessage(List<com.dm4nk.search.avro.Customer> messages) {
@@ -28,9 +29,20 @@ public class KafkaConnectorConsumerListener {
                     streamService.streamCustomer(Collections.singletonList(value));
                 } catch (Exception e1) {
                     log.error(e1.getMessage());
-                    kafkaTemplate.send("customer.public.customer.dlt", value);
+                    customerKafkaTemplate.send("customer.public.customer.dlt", value);
                 }
             }
+        }
+    }
+
+    @KafkaListener(topics = "book.public.book")
+    public void consumeBookMessage(com.dm4nk.search.avro.Book message) {
+        log.info("Consumed message: {}", message);
+        try {
+            streamService.streamBook(message);
+        } catch (Exception e1) {
+            log.error(e1.getMessage());
+            bookKafkaTemplate.send("book.public.book.dlt", message);
         }
     }
 }

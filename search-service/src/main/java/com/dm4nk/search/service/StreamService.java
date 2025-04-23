@@ -1,9 +1,11 @@
 package com.dm4nk.search.service;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import com.dm4nk.search.domain.Book;
 import com.dm4nk.search.domain.Customer;
 import com.dm4nk.search.exceptions.AccountCreationException;
-import com.dm4nk.search.mapper.RecordMapper;
+import com.dm4nk.search.mapper.BookMapper;
+import com.dm4nk.search.mapper.CustomerMapper;
 import com.dm4nk.search.repository.CustomerRepository;
 import com.google.common.collect.Sets;
 import lombok.AllArgsConstructor;
@@ -19,14 +21,17 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @AllArgsConstructor
 public class StreamService {
     private final CustomerRepository customerRepository;
-    private final RecordMapper recordMapper;
+    private final CustomerMapper customerMapper;
+    private final BookMapper bookMapper;
     private final ElasticsearchClient elasticsearchClient;
 
     @Retryable(maxAttempts = 5, backoff = @Backoff(delay = 100), retryFor = {BulkFailureException.class, VersionConflictException.class, AccountCreationException.class})
@@ -75,7 +80,7 @@ public class StreamService {
                 .filter(message -> StringUtils.equals(getId(message), customer.getId()))
                 .toList();
 
-        relevantMessages.forEach(message -> recordMapper.updateCustomer(customer, message.getAfter()));
+        relevantMessages.forEach(message -> customerMapper.updateCustomer(customer, message.getAfter()));
 
         return customer;
     }
@@ -101,6 +106,28 @@ public class StreamService {
                 throw new AccountCreationException();
             }
             throw new RuntimeException(e);
+        }
+    }
+
+    @Retryable(maxAttempts = 5, backoff = @Backoff(delay = 100), retryFor = {BulkFailureException.class, VersionConflictException.class, AccountCreationException.class})
+    public void streamBook(com.dm4nk.search.avro.Book message) {
+        if (Objects.isNull(message.getAfter()) || Objects.isNull(message.getAfter().getCustomerId())) {
+            String id = message.getAfter().getId().toString();
+            Customer customer = customerRepository.findCustomerByBooks_Id(id)
+                    .orElseThrow();
+            List<Book> books = ListUtils.emptyIfNull(customer.getBooks()).stream()
+                    .filter(book -> !Objects.equals(book.getId(), id))
+                    .toList();
+            customer.setBooks(books);
+            customerRepository.save(customer);
+        } else {
+            CharSequence customerId = message.getAfter().getCustomerId();
+            String id = customerId.toString();
+            Customer customer = customerRepository.findById(id).orElseThrow();
+
+            Book book = bookMapper.toValue(message.getAfter());
+            customer.setBooks(Stream.concat(ListUtils.emptyIfNull(customer.getBooks()).stream(), Stream.of(book)).toList());
+            customerRepository.save(customer);
         }
     }
 }

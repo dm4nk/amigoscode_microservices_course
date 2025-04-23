@@ -1,15 +1,15 @@
 server:
-  port: 8080
+  port: 8091
 
 spring:
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
   application:
-    name: customer
+    name: book
   datasource:
     password: anime_the_best
-    url: jdbc:postgresql://localhost:5431/customer
+    url: jdbc:postgresql://localhost:5431/book
     username: dm4nk
   jpa:
     hibernate:
