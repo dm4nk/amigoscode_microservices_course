@@ -12,6 +12,7 @@
         <module>apigw</module>
         <module>customer</module>
         <module>search-service</module>
+        <module>book</module>
     </modules>
     <!--  <name>microservices_course</name>-->
 

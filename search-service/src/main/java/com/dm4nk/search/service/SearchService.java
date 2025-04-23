@@ -3,7 +3,7 @@ package com.dm4nk.search.service;
 import com.dm4nk.clients.search.CustomerResponse;
 import com.dm4nk.clients.search.FullTextSearchRequest;
 import com.dm4nk.search.domain.Customer;
-import com.dm4nk.search.mapper.RecordMapper;
+import com.dm4nk.search.mapper.CustomerMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.client.elc.NativeQueryBuilder;
@@ -24,7 +24,7 @@ import java.util.Optional;
 @AllArgsConstructor
 public class SearchService {
     private final ElasticsearchOperations esOperations;
-    private final RecordMapper recordMapper;
+    private final CustomerMapper customerMapper;
 
     public ResponseEntity<List<CustomerResponse>> findCustomers(FullTextSearchRequest fullTextSearchRequest) {
         String text = fullTextSearchRequest.getText();
@@ -44,7 +44,7 @@ public class SearchService {
                 .flatMap(Streamable::stream)
                 .filter(Objects::nonNull)
                 .map(SearchHit::getContent)
-                .map(recordMapper::toResponse)
+                .map(customerMapper::toResponse)
                 .toList();
 
         return ResponseEntity.ok(users);

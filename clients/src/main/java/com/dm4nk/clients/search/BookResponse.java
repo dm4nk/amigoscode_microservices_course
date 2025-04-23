@@ -6,6 +6,7 @@ import lombok.Data;
 @Data
 @Builder
 public class BookResponse {
-    private String name;
+    private String id;
+    private String title;
     private String author;
 }

@@ -13,7 +13,10 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 @NoArgsConstructor
 public class Book {
     @Field(type = FieldType.Keyword)
-    private String name;
+    private String id;
+
+    @Field(type = FieldType.Keyword)
+    private String title;
 
     @Field(type = FieldType.Keyword)
     private String author;
