@@ -24,14 +24,17 @@ public class BookService {
     private final BookMapper bookMapper;
 
     public ResponseEntity<List<BookResponse>> findAllAvailableBooks() {
+        log.info("Find all available books");
         return ResponseEntity.ok(bookMapper.toBookResponse(bookRepository.findByCustomerIdIsNull()));
     }
 
     public ResponseEntity<List<BookResponse>> findLinkedBooks(String id) {
+        log.info("Find linked books");
         return ResponseEntity.ok(bookMapper.toBookResponse(bookRepository.findByCustomerId(UUID.fromString(id))));
     }
 
     public ResponseEntity<BookResponse> createBook(BookRequest bookRequest) {
+        log.info("Create book");
         Book book = bookMapper.toBook(bookRequest);
         Book saved = bookRepository.save(book);
         return ResponseEntity.ok(bookMapper.toBookResponse(saved));
@@ -39,6 +42,7 @@ public class BookService {
 
     @Transactional
     public ResponseEntity<BookResponse> linkBook(LinkBookRequest linkRequest) {
+        log.info("Link book");
         Book book = bookRepository.getReferenceById(linkRequest.getBookId());
         book.setCustomerId(linkRequest.getCustomerId());
         Book saved = bookRepository.save(book);
@@ -47,6 +51,7 @@ public class BookService {
 
     @Transactional
     public ResponseEntity<BookResponse> unlinkBook(UnlinkBookRequest linkRequest) {
+        log.info("Unlink book");
         Book book = bookRepository.getReferenceById(linkRequest.getBookId());
         book.setCustomerId(null);
         Book saved = bookRepository.save(book);

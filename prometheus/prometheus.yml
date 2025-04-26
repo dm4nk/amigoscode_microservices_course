@@ -6,6 +6,9 @@ scrape_configs:
       - targets: ['host.docker.internal:8080']
         labels:
           service: 'customer'
+      - targets: [ 'host.docker.internal:8091' ]
+        labels:
+          service: 'book'
       - targets: [ 'host.docker.internal:8099' ]
         labels:
           service: 'apigw'

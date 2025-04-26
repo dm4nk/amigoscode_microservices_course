@@ -22,6 +22,7 @@ services:
 
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
+    container_name: zookeeper
     ports:
       - 22181:2181
     environment:
@@ -30,6 +31,7 @@ services:
 
   kafka:
     image: confluentinc/cp-kafka:latest
+    container_name: kafka
     ports:
       - "29092:29092"
     environment:
@@ -44,6 +46,7 @@ services:
 
   schema-registry:
     image: confluentinc/cp-schema-registry:5.5.3
+    container_name: schema-registry
     ports:
       - 8081:8081
     environment:
@@ -84,6 +87,7 @@ services:
 
   elasticsearch:
     image: elasticsearch:7.17.24
+    container_name: elasticsearch
     ports:
       - 9300:9300
       - 9200:9200
@@ -100,6 +104,7 @@ services:
 
   kibana:
     image: kibana:7.2.0
+    container_name: kibana
     ports:
       - 5601:5601
     environment:
@@ -109,6 +114,7 @@ services:
 
   keycloak:
     image: quay.io/keycloak/keycloak:16.1.1
+    container_name: keycloak
     ports:
       - 8180:8080
     environment:
@@ -127,6 +133,7 @@ services:
 
   logstash:
     image: logstash:8.17.0
+    container_name: logstash
     ports:
       - 5046:5046
       - 5000:5000/tcp
@@ -136,6 +143,7 @@ services:
 
   prometheus:
     image: prom/prometheus
+    container_name: prometheus
     volumes:
       - ./prometheus/:/etc/prometheus/
     command:
@@ -145,6 +153,7 @@ services:
 
   grafana:
     image: grafana/grafana:9.2.0
+    container_name: grafana
     depends_on:
       - prometheus
     ports:
@@ -156,6 +165,7 @@ services:
 
   kafka-exporter:
     image: danielqsj/kafka-exporter
+    container_name: kafka-exporter
     command: [ "--kafka.server=kafka:9092" ]
     ports:
       - 9308:9308
@@ -164,6 +174,7 @@ services:
 
   postgres-exporter:
     image: quay.io/prometheuscommunity/postgres-exporter
+    container_name: postgres-exporter
     ports:
       - 9187:9187
     environment:
