@@ -1,20 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration>
-    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+<configuration scan="true">
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
 
     <springProperty scope="context"
                     name="spring.application.name"
                     source="spring.application.name"
                     defaultValue="empty"/>
 
+    <springProperty scope="context"
+                    name="logtrace.pattern"
+                    source="logtrace.pattern"
+                    defaultValue="%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} -%kvp- %msg%n"/>
+
     <appender name="logstash" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
         <destination>localhost:5000</destination>
         <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
             <providers>
-                <mdc />
-                <context />
-                <logLevel />
-                <loggerName />
+                <mdc/>
+                <context/>
+                <logLevel/>
+                <loggerName/>
                 <pattern>
                     <pattern>
                         {
@@ -22,14 +27,25 @@
                         }
                     </pattern>
                 </pattern>
-                <threadName />
-                <message />
-                <logstashMarkers />
-                <stackTrace />
+                <threadName/>
+                <message/>
+                <logstashMarkers/>
+                <stackTrace/>
             </providers>
         </encoder>
     </appender>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${logtrace.pattern}</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="com.dm4nk" level="INFO"/>
+
     <root level="info">
-        <appender-ref ref="logstash" />
+        <appender-ref ref="logstash"/>
+        <appender-ref ref="STDOUT"/>
     </root>
+
 </configuration>

@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -39,5 +40,15 @@ public class CustomerService {
         customerMapper.updateCustomer(customer, request);
 
         return ResponseEntity.ok(customerMapper.toCustomerResponse(customerRepository.save(customer)));
+    }
+
+    public ResponseEntity<List<CustomerResponse>> findById(UUID id) {
+        log.info("Find customer by id {}", id);
+        return ResponseEntity.ok(customerRepository.findById(id)
+                .stream()
+                .map(Collections::singletonList)
+                .map(customerMapper::toCustomerResponse)
+                .findAny()
+                .orElseThrow());
     }
 }

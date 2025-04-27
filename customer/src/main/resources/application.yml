@@ -18,7 +18,7 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
-    show-sql: true
+    show-sql: false
     open-in-view: false
 
 logger:
@@ -28,6 +28,7 @@ logtrace:
   enabled: true
   before-message-prefix: '['
   after-message-prefix: '['
+#  pattern: "%clr(%d{${LOG_DATEFORMAT_PATTERN:yyyy-MM-dd HH:mm:ss.SSS}}){faint} %clr(${LOG_LEVEL_PATTERN:%5p}) %clr(${PID:}){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:%wEx}"
 
 logging:
   level:
@@ -42,5 +43,9 @@ management:
     tracing:
       endpoint: http://localhost:9411/api/v2/spans
   tracing:
+    enabled: false
     sampling:
-      probability: 1.0
+      probability: 0.9
+eureka:
+  client:
+    enabled: false

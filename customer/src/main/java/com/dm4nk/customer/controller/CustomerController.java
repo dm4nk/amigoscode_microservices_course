@@ -27,6 +27,11 @@ public class CustomerController {
         return customerService.findAll();
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<List<CustomerResponse>> findCustomers(@PathVariable("id") UUID id) {
+        return customerService.findById(id);
+    }
+
     @PostMapping
     public ResponseEntity<CustomerResponse> createCustomer(@RequestBody CustomerRequest request) {
         return customerService.create(request);
