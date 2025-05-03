@@ -1,5 +1,9 @@
 package com.dm4nk.customer.service;
 
+import com.dm4nk.clients.book.BookClient;
+import com.dm4nk.clients.book.BookResponse;
+import com.dm4nk.clients.book.LinkBookRequest;
+import com.dm4nk.clients.book.UnlinkBookRequest;
 import com.dm4nk.clients.customer.CustomerRequest;
 import com.dm4nk.clients.customer.CustomerResponse;
 import com.dm4nk.customer.db.model.Customer;
@@ -20,6 +24,7 @@ import java.util.UUID;
 public class CustomerService {
     private final CustomerRepository customerRepository;
     private final CustomerMapper customerMapper;
+    private final BookClient bookClient;
 
     public ResponseEntity<List<CustomerResponse>> findAll() {
         log.info("Find all customers");
@@ -50,5 +55,13 @@ public class CustomerService {
                 .map(customerMapper::toCustomerResponse)
                 .findAny()
                 .orElseThrow());
+    }
+
+    public ResponseEntity<BookResponse> linkBook(LinkBookRequest linkRequest) {
+        return bookClient.linkBook(linkRequest);
+    }
+
+    public ResponseEntity<BookResponse> unlinkBook(UnlinkBookRequest linkRequest) {
+        return bookClient.unlinkBook(linkRequest);
     }
 }

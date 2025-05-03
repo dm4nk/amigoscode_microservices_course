@@ -43,9 +43,9 @@ management:
     tracing:
       endpoint: http://localhost:9411/api/v2/spans
   tracing:
-    enabled: false
+    enabled: true
     sampling:
-      probability: 0.9
+      probability: 1
 eureka:
   client:
-    enabled: false
+    enabled: true
