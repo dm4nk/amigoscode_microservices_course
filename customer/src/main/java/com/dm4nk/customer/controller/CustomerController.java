@@ -5,6 +5,7 @@ import com.dm4nk.clients.book.LinkBookRequest;
 import com.dm4nk.clients.book.UnlinkBookRequest;
 import com.dm4nk.clients.customer.CustomerRequest;
 import com.dm4nk.clients.customer.CustomerResponse;
+import com.dm4nk.customer.aop.AuditEvent;
 import com.dm4nk.customer.service.CustomerService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -27,31 +28,37 @@ public class CustomerController {
     private final CustomerService customerService;
 
     @GetMapping
+    @AuditEvent("findCustomers")
     public ResponseEntity<List<CustomerResponse>> findCustomers() {
         return customerService.findAll();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<List<CustomerResponse>> findCustomers(@PathVariable("id") UUID id) {
+    @AuditEvent("findCustomerById")
+    public ResponseEntity<List<CustomerResponse>> findCustomerById(@PathVariable("id") UUID id) {
         return customerService.findById(id);
     }
 
     @PostMapping
+    @AuditEvent("createCustomer")
     public ResponseEntity<CustomerResponse> createCustomer(@RequestBody CustomerRequest request) {
         return customerService.create(request);
     }
 
     @PatchMapping("/{id}")
+    @AuditEvent("updateCustomer")
     public ResponseEntity<CustomerResponse> updateCustomer(@RequestBody CustomerRequest request, @PathVariable("id") UUID id) {
         return customerService.update(id, request);
     }
 
     @PutMapping("/link")
+    @AuditEvent("linkBook")
     public ResponseEntity<BookResponse> linkBook(@RequestBody LinkBookRequest linkRequest) {
         return customerService.linkBook(linkRequest);
     }
 
     @PutMapping("/unlink")
+    @AuditEvent("unlinkBook")
     public ResponseEntity<BookResponse> unlinkBook(@RequestBody UnlinkBookRequest linkRequest) {
         return customerService.unlinkBook(linkRequest);
     }
